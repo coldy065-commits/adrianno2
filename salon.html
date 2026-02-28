@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ADRIANNO Frizerski Salon – Vesna Kraljić</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* GOLD PALETTE */
+      --gold-bright:  #d4a843;
+      --gold:         #c9a96e;
+      --gold-light:   #e8cfa0;
+      --gold-pale:    #f2e4c4;
+      --gold-dark:    #9a7a45;
+      --gold-deeper:  #7a5c28;
+
+      /* BROWN PALETTE */
+      --brown-deep:   #1a0a05;
+      --brown-dark:   #2a1208;
+      --brown-mid:    #4a2510;
+      --brown-warm:   #6b3d1e;
+      --brown-light:  #8c5530;
+
+      /* BACKGROUNDS – layered warm darks */
+      --bg-base:      #180a04;   /* darkest sections */
+      --bg-section:   #211009;   /* alternating */
+      --bg-card:      #2e1710;   /* cards */
+      --bg-card-hover:#3a1f14;
+
+      /* TEXT */
+      --text-primary: #f5e6c8;   /* warm cream – always readable on dark bg */
+      --text-secondary:#d4b896;  /* mid gold-cream */
+      --text-muted:   #9a7d5e;   /* subdued */
+      --text-dark:    #1a0a05;   /* dark text on gold backgrounds */
+
+      /* ACCENTS */
+      --accent-line:  rgba(212,168,67,0.35);
+      --accent-glow:  rgba(212,168,67,0.12);
+
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Jost', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CURSOR ── */
+    .cursor {
+      width: 8px; height: 8px;
+      background: var(--gold-bright);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+    }
+    .cursor-ring {
+      width: 34px; height: 34px;
+      border: 1px solid rgba(212,168,67,0.55);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transition: transform 0.35s cubic-bezier(.175,.885,.32,1.275), width .3s, height .3s;
+      transform: translate(-50%,-50%);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 28px 60px;
+      transition: background .4s, padding .4s, border-color .4s;
+    }
+    nav.scrolled {
+      background: rgba(24,10,4,0.97);
+      backdrop-filter: blur(20px);
+      padding: 16px 60px;
+      border-bottom: 1px solid var(--accent-line);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.6rem; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold-bright); text-decoration: none;
+    }
+    .nav-logo span {
+      display: block;
+      font-size: .42rem; font-family: var(--font-body); font-weight: 300;
+      letter-spacing: .55em; color: var(--text-muted);
+      margin-top: 3px; text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-size: .68rem; font-weight: 400; letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--text-secondary); text-decoration: none;
+      position: relative; transition: color .3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--gold-bright);
+      transition: width .3s ease;
+    }
+    .nav-links a:hover { color: var(--gold-bright); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    #hero {
+      height: 100vh;
+      display: grid; grid-template-columns: 55% 45%;
+      position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 78% 52%,
+        #d4a843 0%, #b8891f 22%, #7a4a10 50%, #2a0f08 75%, #180a04 100%);
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 140px 60px 80px; position: relative; z-index: 2;
+    }
+    .hero-title-small {
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2vw, 1.5rem); font-weight: 400;
+      letter-spacing: .4em; text-transform: uppercase;
+      color: var(--brown-deep); margin-bottom: 6px;
+      opacity: 0; animation: fadeUp .7s ease .3s forwards;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 10vw, 9rem); font-weight: 300;
+      line-height: .9; letter-spacing: -.02em;
+      color: var(--brown-deep); margin-bottom: 52px;
+      opacity: 0; animation: fadeUp .7s ease .5s forwards;
+    }
+    .hero-cta-group {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp .7s ease .8s forwards;
+    }
+    .btn-dark {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 15px 34px; border-radius: 100px;
+      background: var(--brown-deep); color: var(--gold-bright);
+      font-family: var(--font-body); font-size: .68rem; font-weight: 500;
+      letter-spacing: .3em; text-transform: uppercase; text-decoration: none;
+      transition: background .3s, transform .3s;
+    }
+    .btn-dark:hover { background: #0d0503; transform: translateY(-2px); }
+    .hero-badge {
+      margin-top: 55px; display: flex; align-items: center; gap: 18px;
+      opacity: 0; animation: fadeUp .7s ease 1.05s forwards;
+    }
+    .hero-badge-line { width: 38px; height: 1px; background: rgba(26,10,5,.4); }
+    .hero-badge-text {
+      font-size: .62rem; letter-spacing: .35em; text-transform: uppercase;
+      color: rgba(26,10,5,.65);
+    }
+    /* right photo panel */
+    .hero-right { position: relative; overflow: hidden; z-index: 1; }
+    .hero-img-container { position: absolute; inset: 0; }
+    .hero-img-container img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: brightness(.6) saturate(.55) sepia(.15);
+      transform: scale(1.05); animation: heroZoom 8s ease forwards;
+    }
+    .hero-img-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, #7a4a10 0%, transparent 38%);
+    }
+    .hero-img-overlay2 {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,10,5,.6) 0%, transparent 55%);
+    }
+    .hero-vertical-text {
+      position: absolute; bottom: 80px; right: 22px;
+      writing-mode: vertical-rl;
+      font-size: .58rem; letter-spacing: .4em; text-transform: uppercase;
+      color: rgba(212,168,67,.35); z-index: 5;
+    }
+    .hero-scroll {
+      position: absolute; bottom: 38px; left: 60px;
+      display: flex; align-items: center; gap: 14px; z-index: 5;
+      opacity: 0; animation: fadeUp .7s ease 1.4s forwards;
+    }
+    .hero-scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, transparent, rgba(26,10,5,.45));
+      animation: scrollLine 2s ease infinite;
+    }
+    .hero-scroll-text { font-size: .58rem; letter-spacing: .4em; text-transform: uppercase; color: rgba(26,10,5,.55); }
+
+    @keyframes heroZoom { from { transform: scale(1.05); } to { transform: scale(1.0); } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes scrollLine { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+    /* ── MARQUEE ── */
+    .marquee-section {
+      background: var(--gold-bright); overflow: hidden; padding: 13px 0;
+    }
+    .marquee-track {
+      display: flex; animation: marquee 22s linear infinite; white-space: nowrap;
+    }
+    .marquee-item {
+      display: flex; align-items: center; gap: 22px; padding: 0 28px;
+      font-size: .63rem; font-weight: 500; letter-spacing: .38em;
+      text-transform: uppercase; color: var(--brown-deep);
+    }
+    .marquee-item .dot { width: 4px; height: 4px; background: rgba(26,10,5,.35); border-radius: 50%; flex-shrink: 0; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── SHARED SECTION STYLES ── */
+    section { padding: 120px 60px; }
+
+    .section-label { display: flex; align-items: center; gap: 14px; margin-bottom: 52px; }
+    .section-label-line { width: 28px; height: 1px; background: var(--gold-bright); }
+    .section-label-text {
+      font-size: .58rem; font-weight: 400; letter-spacing: .5em;
+      text-transform: uppercase; color: var(--gold-bright);
+    }
+
+    /* section alternating backgrounds */
+    .bg-dark  { background: var(--bg-base); }
+    .bg-warm  { background: var(--bg-section); }
+
+    /* gradient dividers between sections */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent-line), transparent);
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 100px; align-items: center;
+      background: var(--bg-section);
+    }
+    .about-image-wrap { position: relative; }
+    .about-image-frame {
+      position: absolute; top: -18px; left: -18px; right: 18px; bottom: 18px;
+      border: 1px solid var(--accent-line); pointer-events: none;
+    }
+    .about-image-wrap img {
+      width: 100%; aspect-ratio: 3/4; object-fit: cover;
+      filter: brightness(.8) saturate(.6) sepia(.1);
+    }
+    .about-year {
+      position: absolute; bottom: -28px; right: -28px;
+      background: var(--gold-bright); color: var(--brown-deep);
+      padding: 22px 26px;
+      font-family: var(--font-display); font-size: 2.8rem; font-weight: 600; line-height: 1;
+    }
+    .about-year small {
+      display: block; font-family: var(--font-body);
+      font-size: .52rem; font-weight: 400; letter-spacing: .4em;
+      text-transform: uppercase; margin-top: 4px;
+    }
+    .about-content h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 300; line-height: 1.15;
+      color: var(--text-primary); margin-bottom: 28px;
+    }
+    .about-content h2 em { font-style: italic; color: var(--gold-light); }
+    .about-content p {
+      font-size: .88rem; line-height: 1.88;
+      color: var(--text-secondary); margin-bottom: 22px;
+    }
+    .about-stats {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 22px;
+      margin-top: 48px; padding-top: 48px;
+      border-top: 1px solid var(--accent-line);
+    }
+    .stat-number {
+      font-family: var(--font-display); font-size: 2.6rem; font-weight: 300;
+      color: var(--gold-bright); line-height: 1;
+    }
+    .stat-label {
+      font-size: .58rem; font-weight: 300; letter-spacing: .3em;
+      text-transform: uppercase; color: var(--text-muted); margin-top: 7px;
+    }
+
+    /* ── SERVICES ── */
+    #services { background: var(--bg-base); }
+    .services-header {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; margin-bottom: 72px; align-items: end;
+    }
+    .services-header h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 4.2rem); font-weight: 300; line-height: 1.05;
+      color: var(--text-primary);
+    }
+    .services-header h2 em { font-style: italic; color: var(--gold-light); }
+    .services-header p {
+      font-size: .88rem; line-height: 1.82; color: var(--text-secondary); align-self: end;
+    }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 3px;
+    }
+    .service-card {
+      background: var(--bg-card); padding: 48px 38px;
+      position: relative; overflow: hidden;
+      transition: background .4s;
+    }
+    .service-card::before {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px; background: var(--gold-bright);
+      transform: scaleX(0); transform-origin: left; transition: transform .4s ease;
+    }
+    /* subtle left border accent */
+    .service-card::after {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 0; height: 100%;
+      background: linear-gradient(to right, rgba(212,168,67,.07), transparent);
+      transition: width .4s;
+    }
+    .service-card:hover { background: var(--bg-card-hover); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card:hover::after { width: 100%; }
+    .service-number {
+      font-size: .65rem; font-weight: 300; letter-spacing: .3em;
+      color: var(--gold-deeper); margin-bottom: 22px;
+    }
+    .service-icon { font-size: 1.9rem; margin-bottom: 18px; display: block; }
+    .service-name {
+      font-family: var(--font-display); font-size: 1.55rem; font-weight: 400;
+      line-height: 1.2; margin-bottom: 14px; color: var(--text-primary);
+    }
+    .service-desc { font-size: .78rem; line-height: 1.78; color: var(--text-muted); }
+
+    /* ── GALLERY ── */
+    #gallery { background: var(--bg-section); padding-bottom: 60px; }
+    #gallery h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem,4vw,3.4rem); font-weight: 300;
+      color: var(--text-primary); margin-bottom: 48px;
+    }
+    #gallery h2 em { font-style: italic; color: var(--gold-light); }
+    .gallery-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      grid-template-rows: auto auto; gap: 4px;
+    }
+    .gallery-item { overflow: hidden; position: relative; background: var(--bg-card); }
+    .gallery-item:first-child { grid-column: span 2; grid-row: span 2; }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; min-height: 220px;
+      filter: brightness(.65) saturate(.55) sepia(.1);
+      transition: transform .7s ease, filter .5s ease;
+    }
+    .gallery-item:first-child img { min-height: 440px; }
+    .gallery-item:hover img { transform: scale(1.06); filter: brightness(.8) saturate(.7); }
+    .gallery-item-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,10,5,.8) 0%, transparent 55%);
+      opacity: 0; transition: opacity .4s;
+      display: flex; align-items: flex-end; padding: 22px;
+    }
+    .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+    .gallery-item-label { font-size: .62rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-light); }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: var(--bg-base);
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 100px; align-items: start;
+    }
+    .contact-content h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem,4vw,3.8rem); font-weight: 300; line-height: 1.1;
+      color: var(--text-primary); margin-bottom: 40px;
+    }
+    .contact-content h2 em { font-style: italic; color: var(--gold-light); }
+    .contact-info-item {
+      display: flex; gap: 18px;
+      margin-bottom: 32px; padding-bottom: 32px;
+      border-bottom: 1px solid rgba(212,168,67,.1);
+    }
+    .contact-info-item:last-of-type { border-bottom: none; }
+    .contact-icon {
+      width: 44px; height: 44px;
+      border: 1px solid rgba(212,168,67,.25);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 1rem; color: var(--gold-bright);
+    }
+    .contact-info-label {
+      font-size: .58rem; font-weight: 400; letter-spacing: .4em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px;
+    }
+    .contact-info-value {
+      font-family: var(--font-display); font-size: 1.1rem; font-weight: 400;
+      color: var(--text-primary);
+    }
+    .contact-info-value a { color: inherit; text-decoration: none; transition: color .3s; }
+    .contact-info-value a:hover { color: var(--gold-bright); }
+
+    .contact-hours {
+      background: var(--bg-card);
+      padding: 48px;
+      border-left: 3px solid var(--gold-bright);
+    }
+    .contact-hours h3 {
+      font-family: var(--font-display); font-size: 1.55rem; font-weight: 400;
+      color: var(--text-primary); margin-bottom: 30px;
+    }
+    .contact-hours h3 em { font-style: italic; color: var(--gold-light); }
+    .hours-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 13px 0; border-bottom: 1px solid rgba(212,168,67,.08); font-size: .8rem;
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-day { color: var(--text-secondary); }
+    .hours-time { color: var(--gold-bright); font-weight: 400; }
+    .hours-closed { color: var(--text-muted); font-style: italic; font-size: .7rem; }
+
+    .contact-map { margin-top: 38px; overflow: hidden; }
+    .contact-map iframe {
+      width: 100%; height: 270px; border: none;
+      filter: invert(88%) hue-rotate(180deg) saturate(.35) brightness(.75);
+    }
+
+    .contact-tip {
+      margin-top: 32px; padding: 20px 22px;
+      background: rgba(212,168,67,.06);
+      border: 1px solid rgba(212,168,67,.15);
+    }
+    .contact-tip p { font-size: .73rem; line-height: 1.72; color: var(--text-secondary); }
+    .contact-tip strong { color: var(--gold-bright); font-weight: 400; }
+
+    .btn-call {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-top: 28px; padding: 15px 34px; border-radius: 100px;
+      background: var(--gold-bright); color: var(--brown-deep);
+      font-family: var(--font-body); font-size: .68rem; font-weight: 500;
+      letter-spacing: .3em; text-transform: uppercase; text-decoration: none;
+      transition: background .3s, transform .3s;
+    }
+    .btn-call:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--brown-deep);
+      padding: 44px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--accent-line);
+    }
+    .footer-logo {
+      font-family: var(--font-display); font-size: 1.4rem; font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase; color: var(--gold-bright);
+    }
+    .footer-copy { font-size: .62rem; letter-spacing: .2em; color: var(--text-muted); }
+    .footer-since { font-family: var(--font-display); font-style: italic; font-size: .9rem; color: rgba(212,168,67,.45); }
+
+    /* ── REVEAL ON SCROLL ── */
+    .reveal { opacity: 0; transform: translateY(38px); transition: opacity .8s ease, transform .8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .15s; }
+    .reveal-delay-2 { transition-delay: .3s; }
+    .reveal-delay-3 { transition-delay: .45s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 20px 22px; }
+      nav.scrolled { padding: 13px 22px; }
+      .nav-links { display: none; }
+      #hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 120px 22px 60px; }
+      .hero-right { display: none; }
+      #about { grid-template-columns: 1fr; gap: 60px; padding: 80px 22px; }
+      .about-year { bottom: 16px; right: 16px; }
+      section { padding: 80px 22px; }
+      .services-header { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: repeat(2,1fr); }
+      .gallery-item:first-child { grid-column: span 2; }
+      #contact { grid-template-columns: 1fr; gap: 56px; }
+      footer { flex-direction: column; gap: 14px; text-align: center; padding: 36px 22px; }
+      /* QR section adapts on mobile */
+      #qr-section { padding: 40px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent">
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- ── NAV ── -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">
+      ADRIANNO
+      <span>Frizerski Salon</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">O nama</a></li>
+      <li><a href="#services">Usluge</a></li>
+      <li><a href="#gallery">Galerija</a></li>
+      <li><a href="#contact">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section id="hero">
+    <div class="hero-left">
+      <p class="hero-title-small">Frizerski Salon</p>
+      <h1 class="hero-title">ADRIANNO</h1>
+      <div class="hero-cta-group">
+        <a href="#contact" class="btn-dark">Rezerviraj termin</a>
+        <a href="#services" class="btn-dark" style="background:#3d1f08;">Naše usluge</a>
+      </div>
+      <div class="hero-badge">
+        <div class="hero-badge-line"></div>
+        <span class="hero-badge-text">Križevci · od 1994.</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-img-container">
+        <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&q=80" alt="Frizerski salon" />
+        <div class="hero-img-overlay"></div>
+        <div class="hero-img-overlay2"></div>
+      </div>
+    </div>
+    <div class="hero-vertical-text">Križevci · Hrvatska · Est. 1994</div>
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+      <span class="hero-scroll-text">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ── MARQUEE ── -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <div class="marquee-item">Šišanje <span class="dot"></span></div>
+      <div class="marquee-item">Bojanje Kose <span class="dot"></span></div>
+      <div class="marquee-item">Balayage <span class="dot"></span></div>
+      <div class="marquee-item">Friziranje <span class="dot"></span></div>
+      <div class="marquee-item">Keratin <span class="dot"></span></div>
+      <div class="marquee-item">Trajni Val <span class="dot"></span></div>
+      <div class="marquee-item">Svečane Frizure <span class="dot"></span></div>
+      <div class="marquee-item">ADRIANNO Salon <span class="dot"></span></div>
+      <div class="marquee-item">Šišanje <span class="dot"></span></div>
+      <div class="marquee-item">Bojanje Kose <span class="dot"></span></div>
+      <div class="marquee-item">Balayage <span class="dot"></span></div>
+      <div class="marquee-item">Friziranje <span class="dot"></span></div>
+      <div class="marquee-item">Keratin <span class="dot"></span></div>
+      <div class="marquee-item">Trajni Val <span class="dot"></span></div>
+      <div class="marquee-item">Svečane Frizure <span class="dot"></span></div>
+      <div class="marquee-item">ADRIANNO Salon <span class="dot"></span></div>
+    </div>
+  </div>
+
+  <!-- ── ABOUT ── -->
+  <section id="about">
+    <div class="about-image-wrap reveal">
+      <div class="about-image-frame"></div>
+      <img src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=700&q=80" alt="Salon" />
+      <div class="about-year">30+<small>Godina iskustva</small></div>
+    </div>
+    <div class="about-content">
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span class="section-label-text">O nama</span>
+      </div>
+      <h2 class="reveal">Strast prema<br><em>ljepoti i stilu</em></h2>
+      <p class="reveal reveal-delay-1">
+        Frizerski salon ADRIANNO osnovala je Vesna Kraljić 1994. godine u Križevcima. Više od tri desetljeća posvećenosti kvaliteti, stilu i zadovoljstvu klijentica učinilo je ovaj salon jednim od najprepoznatljivijih u regiji.
+      </p>
+      <p class="reveal reveal-delay-2">
+        Vlasnica Vesna i njezin tim pažljivo prate trendove, ali uvijek ostaju vjerni onomu što svaka klijentica zaista treba — individualnom pristupu, stručnom savjetu i rezultatu koji osvoji osmijeh.
+      </p>
+      <div class="about-stats reveal reveal-delay-3">
+        <div class="stat-item">
+          <div class="stat-number">1994</div>
+          <div class="stat-label">Godina osnivanja</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">30+</div>
+          <div class="stat-label">Godina iskustva</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Zadovoljnih klijentica</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── SERVICES ── -->
+  <section id="services">
+    <div class="services-header">
+      <div>
+        <div class="section-label">
+          <div class="section-label-line"></div>
+          <span class="section-label-text">Naše usluge</span>
+        </div>
+        <h2 class="reveal">Sve što<br>Vaša kosa<br><em>zaslužuje</em></h2>
+      </div>
+      <p class="reveal">Nudimo kompletan spektar frizerskih usluga — od klasičnog šišanja do modernih tehnika bojanja i njege kose. Svaka usluga prilagođena je Vašim željama i tipu kose.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-number">01</div>
+        <span class="service-icon">✂️</span>
+        <div class="service-name">Šišanje &amp; Oblikovanje</div>
+        <p class="service-desc">Precizno šišanje prilagođeno obliku lica i osobnom stilu. Za žene, muškarce i djecu.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-number">02</div>
+        <span class="service-icon">🎨</span>
+        <div class="service-name">Bojanje &amp; Koloriranje</div>
+        <p class="service-desc">Sve tehnike bojanja — od punog bojanja do balayagea, ombre i highlight efekata.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-number">03</div>
+        <span class="service-icon">💫</span>
+        <div class="service-name">Friziranje &amp; Stiliziranje</div>
+        <p class="service-desc">Svečane frizure, vjenčanja, matura ili svaki poseban trenutak — s nama ste u sigurnim rukama.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-number">04</div>
+        <span class="service-icon">🌿</span>
+        <div class="service-name">Njega &amp; Tretmani</div>
+        <p class="service-desc">Regeneracijski tretmani, keratin i dubinska njega za zdravu, sjajnu i hidratiziranu kosu.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-number">05</div>
+        <span class="service-icon">〰️</span>
+        <div class="service-name">Trajni Val &amp; Ravnanje</div>
+        <p class="service-desc">Dugotrajne promjene oblika kose — kovrče, valovi ili potpuno ravna kosa po Vašoj želji.</p>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-number">06</div>
+        <span class="service-icon">✨</span>
+        <div class="service-name">Savjetovanje o Kosi</div>
+        <p class="service-desc">Stručni savjet o tipu, njezi i stilu kose — jer dobra frizura počinje dobrim savjetom.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── GALLERY ── -->
+  <section id="gallery">
+    <div class="section-label">
+      <div class="section-label-line"></div>
+      <span class="section-label-text">Galerija radova</span>
+    </div>
+    <h2 class="reveal">Naši <em>rezultati govore</em></h2>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80" alt="Bojanje" />
+        <div class="gallery-item-overlay"><span class="gallery-item-label">Bojanje &amp; Balayage</span></div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=500&q=80" alt="Šišanje" />
+        <div class="gallery-item-overlay"><span class="gallery-item-label">Šišanje</span></div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?w=500&q=80" alt="Friziranje" />
+        <div class="gallery-item-overlay"><span class="gallery-item-label">Friziranje</span></div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=500&q=80" alt="Svečana frizura" />
+        <div class="gallery-item-overlay"><span class="gallery-item-label">Svečana Frizura</span></div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=500&q=80" alt="Njega kose" />
+        <div class="gallery-item-overlay"><span class="gallery-item-label">Njega Kose</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── CONTACT ── -->
+  <section id="contact">
+    <div class="contact-content">
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span class="section-label-text">Kontakt</span>
+      </div>
+      <h2 class="reveal">Posjetite nas<br>ili nas <em>nazovite</em></h2>
+
+      <div class="contact-info-item reveal">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-info-label">Adresa</div>
+          <div class="contact-info-value">Ul. Franje Markovića 69<br>48260 Križevci, Hrvatska</div>
+        </div>
+      </div>
+      <div class="contact-info-item reveal reveal-delay-1">
+        <div class="contact-icon">📞</div>
+        <div>
+          <div class="contact-info-label">Telefon</div>
+          <div class="contact-info-value">
+            <a href="tel:048681126">048 681 126</a><br>
+            <a href="tel:0915602521" style="font-size:.9rem;color:var(--text-muted)">091 560 2521</a>
+          </div>
+        </div>
+      </div>
+      <div class="contact-info-item reveal reveal-delay-2">
+        <div class="contact-icon">📱</div>
+        <div>
+          <div class="contact-info-label">Mobitel 2</div>
+          <div class="contact-info-value"><a href="tel:0916180596">091 618 0596</a></div>
+        </div>
+      </div>
+
+      <div class="contact-map reveal">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2783.2!2d16.5383!3d46.0233!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sFranje%20Markovi%C4%87a%2069%2C%20Kri%C5%BEevci!5e0!3m2!1shr!2shr!4v1"
+          allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+
+    <div class="contact-hours reveal reveal-delay-1">
+      <h3>Radno <em>Vrijeme</em></h3>
+      <div class="hours-row"><span class="hours-day">Ponedjeljak</span><span class="hours-time">08:00 – 16:00</span></div>
+      <div class="hours-row"><span class="hours-day">Utorak</span><span class="hours-time">08:00 – 16:00</span></div>
+      <div class="hours-row"><span class="hours-day">Srijeda</span><span class="hours-time">08:00 – 16:00</span></div>
+      <div class="hours-row"><span class="hours-day">Četvrtak</span><span class="hours-time">08:00 – 16:00</span></div>
+      <div class="hours-row"><span class="hours-day">Petak</span><span class="hours-time">08:00 – 16:00</span></div>
+      <div class="hours-row"><span class="hours-day">Subota</span><span class="hours-time">08:00 – 13:00</span></div>
+      <div class="hours-row"><span class="hours-day">Nedjelja</span><span class="hours-closed">Zatvoreno</span></div>
+
+      <div class="contact-tip">
+        <p>💡 <strong>Savjet:</strong> Za rezervaciju termina, preporučujemo nazvati unaprijed kako bismo Vam osigurali željeni termin.</p>
+      </div>
+      <a href="tel:048681126" class="btn-call">📞 &nbsp;Nazovite sada</a>
+    </div>
+  </section>
+
+  <!-- ── QR CODE SECTION ── -->
+  <section id="qr-section" class="bg-warm" style="text-align:center; padding:60px 20px;">
+    <div class="section-label">
+      <div class="section-label-line"></div>
+      <span class="section-label-text">QR kod</span>
+    </div>
+    <p>Skenirajte kod da otvorite ovu stranicu na mobilnom uređaju.</p>
+    <canvas id="qrCanvas"></canvas>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-logo">ADRIANNO</div>
+    <div class="footer-copy">© 2025 ADRIANNO Frizerski Salon — Vesna Kraljić · Križevci</div>
+    <div class="footer-since">Est. 1994</div>
+  </footer>
+
+  </div> <!-- Close mainContent div -->
+
+  <script>
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function tick(){
+      cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+      rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(tick);
+    })();
+
+    // NAV SCROLL
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+    // REVEAL
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(r => io.observe(r));
+
+    // SMOOTH SCROLL
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const t = document.querySelector(a.getAttribute('href'));
+        if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }
+      });
+    });
+  </script>
+  <!-- QRIOUS LIBRARY FOR QR CODES -->
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <script>
+    // generate QR pointing to the current page URL
+    new QRious({
+      element: document.getElementById('qrCanvas'),
+      value: window.location.href,
+      size: 180
+    });
+  </script>
+</body>
+</html>
